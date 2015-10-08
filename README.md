@@ -18,3 +18,8 @@ Génération de la tache urbaine sur le département de l'Isère en PostgreSQL/P
 - on ajoute les champs [nbatidur] et [nbatileg] et [nbagrege] on compte le nombre de batiments du cadastre DDFiP avec la valeur dur ='Bati dur' et dur ='Bati leger' et de batiments agrégés qui ont générés cette tache urbaine.
 
 L'ensemble du résultat est versé via GéoRhôneAlpes : http://www.georhonealpes.fr
+
+3°) Découpe des taches urbaines départementales en taches communales :
+- découpe de la tache urbaine départementale en taches urbaines à la commune,
+- ajoute les champs [nbatidur] et [nbatileg] et [nbagrege] et l'année de référence de la tache urbaine,
+- ajout des résultats dans une table globale permettant de faire des synthèses à l'année ou à la commune.

@@ -1,6 +1,6 @@
 ﻿----=============================================================================
----- GENERATION DU BATI AGREGE ET DE LA TACHE URBAINE A PARTIR DU CADASTRE DGFIP
----- Version 6 du 31/08/2015						Finalisé oui|x| / non | |
+---- GENERATION DU BATI AGREGE ET DE LA TACHE URBAINE A PARTIR DU CADASTRE DGFiP
+---- Version 6.1 du 08/10/2015						Finalisée oui|x| / non | |
 ----=============================================================================
 ---- Rq : ---- pour les commentaires / -- pour les commandes optionnelles, debuger
 
@@ -27,8 +27,17 @@ ALTER TABLE l_bati_agrege_2005_038
 INSERT INTO l_bati_agrege_2005_038 (the_geom) SELECT (ST_Dump(ST_Buffer(ST_Union(ST_Buffer(the_geom,0,01)),-0,01))).geom as the_geom from cadastre_dgi.n_bati_dgi_038_2005; --debug WHERE cadastre_dgi.n_bati_dgi_038_2005.codcomm = '38001';
 
 ---- Mise à jour des données attributaires
-UPDATE l_bati_agrege_2005_038 SET nbatidur = (SELECT count(*) FROM cadastre_dgi.n_bati_dgi_038_2005 WHERE dur='Bâti dur' and ST_Intersects(cadastre_dgi.n_bati_dgi_038_2005.the_geom, l_bati_agrege_2005_038.the_geom)); -- Compte le nombre de batiments en dur qui ont permis de générer ce batiment agrégé et met la valeur dans le champs  nbatidur
-UPDATE l_bati_agrege_2005_038 SET nbatileg = (SELECT count(*) FROM cadastre_dgi.n_bati_dgi_038_2005 WHERE dur='Bâti léger' and ST_Intersects(cadastre_dgi.n_bati_dgi_038_2005.the_geom, l_bati_agrege_2005_038.the_geom)); -- Compte le nombre de batiments legers qui ont permis de générer ce batiment agrégé et met la valeur dans le champs nbatileg
+UPDATE l_bati_agrege_2005_038 SET nbatidur = (
+	SELECT count(*)
+	FROM cadastre_dgi.n_bati_dgi_038_2005
+	WHERE (dur='Bâti dur' or dur='Bati dur' or dur='01') and ST_Intersects(cadastre_dgi.n_bati_dgi_038_2005.the_geom, l_bati_agrege_2005_038.the_geom)
+); -- Compte le nombre de batiments en dur qui ont permis de générer ce batiment agrégé et met la valeur dans le champs  nbatidur
+
+UPDATE l_bati_agrege_2005_038 SET nbatileg = (
+	SELECT count(*)
+	FROM cadastre_dgi.n_bati_dgi_038_2005
+	WHERE (dur='Bâti léger' or dur='Bati leger' or dur='02') and ST_Intersects(cadastre_dgi.n_bati_dgi_038_2005.the_geom, l_bati_agrege_2005_038.the_geom)
+); -- Compte le nombre de batiments legers qui ont permis de générer ce batiment agrégé et met la valeur dans le champs nbatileg
 
 ----Index géométrique
 CREATE INDEX l_bati_agrege_2005_038_the_geom_gist ON l_bati_agrege_2005_038 USING gist (the_geom);
@@ -59,9 +68,23 @@ ALTER TABLE l_tache_urbaine_2005_038
 INSERT INTO l_tache_urbaine_2005_038 (the_geom) SELECT (ST_Dump(ST_Buffer(ST_Union(ST_Buffer(the_geom,50)),-40))).geom as the_geom from cadastre_dgi.n_bati_dgi_038_2005; --debug WHERE cadastre_dgi.n_bati_dgi_038_2005.codcomm = '38001';
 
 ---- Mise à jour des données attributaires
-UPDATE l_tache_urbaine_2005_038 SET nbatidur = (SELECT count(*) FROM cadastre_dgi.n_bati_dgi_038_2005 WHERE dur='Bâti dur' and ST_Intersects(cadastre_dgi.n_bati_dgi_038_2005.the_geom, l_tache_urbaine_2005_038.the_geom)); -- Compte le nombre de batiments en dur dans la tache urbaine et met la valeur dans le champs  nbatidur
-UPDATE l_tache_urbaine_2005_038 SET nbatileg = (SELECT count(*) FROM cadastre_dgi.n_bati_dgi_038_2005 WHERE dur='Bâti léger' and ST_Intersects(cadastre_dgi.n_bati_dgi_038_2005.the_geom, l_tache_urbaine_2005_038.the_geom)); -- Compte le nombre de batiments en dur dans la tache urbaine et met la valeur dans le champs nbatileg
-UPDATE l_tache_urbaine_2005_038 SET nbagrege = (SELECT count(*) FROM l_bati_agrege_2005_038 WHERE ST_Intersects(l_bati_agrege_2005_038.the_geom, l_tache_urbaine_2005_038.the_geom)); -- Compte le nombre de batiments de la couche des batiments agrégés compris dans la tache urbaine et met la valeur dans le champs  nbagrege
+UPDATE l_tache_urbaine_2005_038 SET nbatidur = (
+	SELECT count(*)
+	FROM cadastre_dgi.n_bati_dgi_038_2005
+	WHERE (dur='Bâti dur' or dur='Bati dur' or dur='01') and ST_Intersects(cadastre_dgi.n_bati_dgi_038_2005.the_geom, l_tache_urbaine_2005_038.the_geom)
+); -- Compte le nombre de batiments en dur dans la tache urbaine et met la valeur dans le champs  nbatidur
+
+UPDATE l_tache_urbaine_2005_038 SET nbatileg = (
+	SELECT count(*)
+	FROM cadastre_dgi.n_bati_dgi_038_2005
+	WHERE (dur='Bâti léger' or dur='Bati leger' or dur='02') and ST_Intersects(cadastre_dgi.n_bati_dgi_038_2005.the_geom, l_tache_urbaine_2005_038.the_geom)
+); -- Compte le nombre de batiments légers dans la tache urbaine et met la valeur dans le champs nbatileg
+
+UPDATE l_tache_urbaine_2005_038 SET nbagrege = (
+	SELECT count(*)
+	FROM l_bati_agrege_2005_038
+	WHERE ST_Intersects(l_bati_agrege_2005_038.the_geom, l_tache_urbaine_2005_038.the_geom)
+); -- Compte le nombre de batiments de la couche des batiments agrégés compris dans la tache urbaine et met la valeur dans le champs  nbagrege
 
 ----Index géométrique
 CREATE INDEX l_tache_urbaine_2005_038_the_geom_gist ON l_tache_urbaine_2005_038 USING gist (the_geom);
@@ -95,3 +118,12 @@ GRANT ALL ON TABLE foncier_sol__n_occupation_sol.l_tache_urbaine_2005_038 TO geo
 ----Attribution des droits géobase38 pour la Consultation
 GRANT SELECT ON TABLE foncier_sol__n_occupation_sol.l_bati_agrege_2005_038 TO public.geobase38_consultation;
 GRANT SELECT ON TABLE foncier_sol__n_occupation_sol.l_tache_urbaine_2005_038 TO public.geobase38_consultation;
+
+----Ajout des commentaires sur les couches créées :
+----l_bati_agrege_2015_038
+COMMENT ON COLUMN foncier_sol__n_occupation_sol.l_bati_agrege_2015_038.nbatidur IS 'Nombre de Batis durs du cadastre agrégés';
+COMMENT ON COLUMN foncier_sol__n_occupation_sol.l_bati_agrege_2015_038.nbatileg IS 'Nombre de Batis légers du cadastre agrégés';
+----l_tache_urbaine_2015_038
+COMMENT ON COLUMN foncier_sol__n_occupation_sol.l_tache_urbaine_2015_038.nbatidur IS 'Nombre de Batis durs du cadastre englobés dans la tache urbaine';
+COMMENT ON COLUMN foncier_sol__n_occupation_sol.l_tache_urbaine_2015_038.nbatileg IS 'Nombre de Batis légers du cadastre englobés dans la tache urbaine';
+COMMENT ON COLUMN foncier_sol__n_occupation_sol.l_tache_urbaine_2015_038.nbagrege IS 'Nombre de batis agrégés du cadastre englobés dans la tache urbaine';
