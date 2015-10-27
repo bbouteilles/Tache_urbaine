@@ -19,7 +19,16 @@ Génération de la tache urbaine sur le département de l'Isère en PostgreSQL/P
 
 L'ensemble du résultat est versé via GéoRhôneAlpes : http://www.georhonealpes.fr
 
+<<<<<<< HEAD
 3°) Découpe des taches urbaines départementales en taches communales :
 - découpe de la tache urbaine départementale en taches urbaines à la commune,
 - ajoute les champs [nbatidur] et [nbatileg] et [nbagrege] et l'année de référence de la tache urbaine,
 - ajout des résultats dans une table globale permettant de faire des synthèses à l'année ou à la commune.
+=======
+3°) Eclatement de l'enveloppe urbaine en sous-enveloppe par commune dans : l_toutes_taches_urbaines_038
+- on découpe l'enveloppe urbaine selon la couche des communes de la BD Topo de 2015,
+- on fait remonter le numéro INSEE dans les données attributaires,
+- on regroupe toutes ces enveloppes dans une seule table avec une distinction par année.
+
+4°) Statistiques de surface et d'évolution dans une seule table : t_tu_synthese_038
+>>>>>>> origin/master
