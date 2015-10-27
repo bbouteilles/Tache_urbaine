@@ -18,3 +18,10 @@ Génération de la tache urbaine sur le département de l'Isère en PostgreSQL/P
 - on ajoute les champs [nbatidur] et [nbatileg] et [nbagrege] on compte le nombre de batiments du cadastre DDFiP avec la valeur dur ='Bati dur' et dur ='Bati leger' et de batiments agrégés qui ont générés cette tache urbaine.
 
 L'ensemble du résultat est versé via GéoRhôneAlpes : http://www.georhonealpes.fr
+
+3°) Eclatement de l'enveloppe urbaine en sous-enveloppe par commune dans : l_toutes_taches_urbaines_038
+- on découpe l'enveloppe urbaine selon la couche des communes de la BD Topo de 2015,
+- on fait remonter le numéro INSEE dans les données attributaires,
+- on regroupe toutes ces enveloppes dans une seule table avec une distinction par année.
+
+4°) Statistiques de surface et d'évolution dans une seule table : t_tu_synthese_038
